@@ -14,11 +14,24 @@
 # Configuration
 include_once("config/config.php");
 
-# Function Libraries
-include_once("libraries/libraries.php");
+# Include all Function Libraries
+$dir																	= dirname(__FILE__) . "/libraries/";
+$d																		= opendir($dir);
+while ($entry															= readdir($d)) {
+	if (strstr($entry, ".inc.php")) {
+		include_once($dir . $entry);
+	}
+}
 
-# Classes and Objects
-include_once("classes/classes.php");
+
+# Include all classes
+$dir																	= dirname(__FILE__) . "/classes/";
+$d																		= opendir($dir);
+while ($entry															= readdir($d)) {
+	if (strstr($entry, ".class.php")) {
+		include_once($dir . $entry);
+	}
+}
 
 # =========================================================================
 # THE END
