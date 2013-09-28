@@ -1,0 +1,14 @@
+5 August 2012 [Ralfe Poisson]
+
+* Version 2.0 of the ImplyIT WebApplication Template
+* Initial Structure
+* MVC design pattern has been utilized
+* PHPUnit testing framework has been integrated
+ - each module's tests are added as a new file in backend/tests/
+ - the tests are run from the super admin interface admin_tests.php
+* The Server-side scripts are separated from the Client-side scripts
+ - Server-side: /backend/...
+ - Client-side: /frontend/...
+* Access control has been changed from user-level to group-level
+ - Users are assigned to one or more groups
+ - Groups are given access to perform functions

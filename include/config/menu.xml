@@ -1,0 +1,7 @@
+<menu>
+	<item label="Home" link="?p=home" auth="home" ></item>
+	<item label="Documents" link="?p=documents" auth="documents" ></item>
+	<item label="Admin" link="#" auth="admin_menu" >
+		<item label="User Admin" link="admin_users" ></item>
+	</item>
+</menu>
