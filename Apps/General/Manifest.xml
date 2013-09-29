@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+	<app>
+		<meta>
+			<name>General Conversation</name>
+			<description>
+				This application provides the functionality for general conversational dialog.
+			</description>
+			<author>
+				<name>Ralfe Poisson</name>
+				<email>ralfepoisson@gmail.com</email>
+			</author>
+			<version>0.0.1</version>
+		</meta>
+		<hooks>
+			<call>
+				<input>Hello</input>
+				<alts>
+					<alt>Good morning</alt>
+				</alts>
+				<command>php {{APPDIR}}app.php hello</command>
+			</call>
+			<call>
+				<input>Wake up</input>
+				<command>php {{APPDIR}}app.php hello</command>
+			</call>
+		</hooks>
+		<assides>
+			<call>
+				<input>What is the date</input>
+				<command>php {{APPDIR}}app.php date</command>
+				<alts>
+					<alt>What is today's date</alt>
+					<alt>What day is it</alt>
+				</alts>
+			</call>
+		</assides>
+		<conversation_starters>
+			
+		</conversation_starters>
+	</app>
+</document>

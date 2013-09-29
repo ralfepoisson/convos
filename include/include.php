@@ -1,10 +1,12 @@
 <?php
 /**
- * Project
+ * ConvOS
+ * 
+ * Include configuration and all function libraries.
  * 
  * @author Ralfe Poisson <ralfepoisson@gmail.com>
- * @version 2.0
- * @package Project
+ * @version 0.0.1
+ * @license GPL3
  */
 
 # =========================================================================
@@ -23,9 +25,17 @@ while ($entry															= readdir($d)) {
 	}
 }
 
-
 # Include all classes
 $dir																	= dirname(__FILE__) . "/classes/";
+$d																		= opendir($dir);
+while ($entry															= readdir($d)) {
+	if (strstr($entry, ".class.php")) {
+		include_once($dir . $entry);
+	}
+}
+
+# Include all Models
+$dir																	= dirname(__FILE__) . "/models/";
 $d																		= opendir($dir);
 while ($entry															= readdir($d)) {
 	if (strstr($entry, ".class.php")) {
@@ -36,4 +46,3 @@ while ($entry															= readdir($d)) {
 # =========================================================================
 # THE END
 # =========================================================================
-
