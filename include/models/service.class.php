@@ -28,7 +28,6 @@ class Service {
 		ob_implicit_flush();
 	}
 	
-	
 	public function init_socket() {
 		# Log Activity
 		logg("Service: Initializing Socket.");
@@ -108,12 +107,18 @@ class Service {
 	}
 	
 	public function write($output) {
-		# Log Activity
-		logg("Service: Writing to Socket.");
+		# Format Output
+		$output															= trim($output);
 		
-		# Write to Socket
-		if (!socket_write($this->resource, $output, strlen($output))) {
-			$this->error("socket_write() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
+		# Ensure there is something to output
+		if (strlen($output)) {
+			# Log Activity
+			logg("Service: Writing to Socket.");
+		
+			# Write to Socket
+			if (!socket_write($this->resource, $output, strlen($output))) {
+				$this->error("socket_write() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
+			}
 		}
 		
 		# Return True

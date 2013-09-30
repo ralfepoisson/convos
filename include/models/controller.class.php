@@ -24,7 +24,7 @@ class Controller {
 		$output															= $this->route_internals();
 		
 		# Next try Application call routing
-		if (!$output) {
+		if ($output === false) {
 			$output														= $this->route_apps();
 		}
 		
@@ -32,6 +32,9 @@ class Controller {
 		
 		# Encode Output
 		$output															= $this->encode($output);
+		
+		# Log Activity
+		logg("Controller: Returning Output [{$output}]");
 		
 		# Return Output
 		return $output;
@@ -51,14 +54,14 @@ class Controller {
 		
 		# Loop through Hooks
 		foreach ($platform->apps as $app) {
-			foreach ($app->hooks as $call) {
+			foreach ($app->manifest->hooks as $call) {
 				$result													= $this->test_call($call, $message);
 				if (!($result === false)) {
 					# Update Current Application Context
 					$platform->context									= $app;
 					
 					# Log Activity
-					logg("Controller: Routing to App '{$app->name}' through Hook: '{$call->input}'");
+					logg("Controller: Routing to App '{$app->manifest->name}' through Hook: '{$call->input}'");
 					
 					# Return Result
 					return $result;
@@ -68,10 +71,10 @@ class Controller {
 		
 		# Loop through Assides
 		foreach ($platform->apps as $app) {
-			foreach ($app->assides as $call) {
+			foreach ($app->manifest->assides as $call) {
 				$result													= $this->test_call($call, $message);
 				if (!($result === false)) {
-					logg("Controller: Routing to App '{$app->name}' through Asside: '{$call->input}'");
+					logg("Controller: Routing to App '{$app->manifest->name}' through Asside: '{$call->input}'");
 					return $result;
 				}
 			}
@@ -79,14 +82,14 @@ class Controller {
 		
 		# Loop through Conversation Starters
 		foreach ($platform->apps as $app) {
-			foreach ($app->starters as $call) {
+			foreach ($app->manifest->starters as $call) {
 				$result													= $this->test_call($call, $message);
 				if (!($result === false)) {
 					# Update Current Application Context
 					$platform->context									= $app;
 					
 					# Log Activity
-					logg("Controller: Routing to App '{$app->name}' through Conversation Starter: '{$call->input}'");
+					logg("Controller: Routing to App '{$app->manifest->name}' through Conversation Starter: '{$call->input}'");
 					
 					# Return Result
 					return $result;
@@ -108,6 +111,7 @@ class Controller {
 		# Test Call's Alternative Input Phrases
 		if (sizeof($call->alts->alt)) {
 			foreach ($call->alts->alt as $alt) {
+				logg("Testing '{$message}' against {$alt}.");
 				if ($alt == $message) {
 					return $this->call_command($call->command);
 				}
@@ -133,7 +137,21 @@ class Controller {
 	}
 	
 	private function render_command($command) {
-		//TODO: Apply template class
+		# Global Variables
+		global $_GLOBALS;
+		
+		# Prepare Variables for Rendering
+		$vars															= array(	
+																					"APPDIR"		=> $_GLOBALS['app_dir']
+																				);
+		
+		# Create Template Object
+		$template														= new Template();
+		
+		# Render Command
+		$command														= $template->render($command, $vars);
+		
+		# Return Command
 		return $command;
 	}
 	

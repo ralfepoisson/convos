@@ -22,6 +22,7 @@ require_once(dirname(__FILE__) . "/include/include.php");
 # =====================================================================
 
 # Create Platform Object
+global $platform;
 $platform																= Platform::Factory();
 
 # Initialize Platform

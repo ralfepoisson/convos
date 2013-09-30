@@ -18,17 +18,17 @@
 				<alts>
 					<alt>Good morning</alt>
 				</alts>
-				<command>php {{APPDIR}}app.php hello</command>
+				<command>php {{APPDIR}}/General/app.php hello</command>
 			</call>
 			<call>
 				<input>Wake up</input>
-				<command>php {{APPDIR}}app.php hello</command>
+				<command>php {{APPDIR}}/General/app.php hello</command>
 			</call>
 		</hooks>
 		<assides>
 			<call>
 				<input>What is the date</input>
-				<command>php {{APPDIR}}app.php date</command>
+				<command>php {{APPDIR}}/General/app.php date</command>
 				<alts>
 					<alt>What is today's date</alt>
 					<alt>What day is it</alt>

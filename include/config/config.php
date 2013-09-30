@@ -19,7 +19,7 @@ $_GLOBALS['server_port']												= 3333;
 $_GLOBALS['base_dir']													= dirname(dirname(dirname(__FILE__))) . "/";
 $_GLOBALS['app_dir']													= $_GLOBALS['base_dir'] . "Apps/";
 $_GLOBALS['log_file']													= "/var/log/convos/" . date("Ymd") . ".log";
-$app																	= 0;
+$platform																= 0;
 
 # =========================================================================
 # THE END

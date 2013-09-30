@@ -43,11 +43,11 @@ class Platform {
 	 */
 	public static function Factory() {
 		# Global Variables
-		global $app;
+		global $platform;
 		
 		# Ensure Singleton
-		if (is_object($app)) {
-			return $app;
+		if (is_object($platform)) {
+			return $platform;
 		}
 		else {
 			return new Platform();
@@ -70,15 +70,20 @@ class Platform {
 		$this->service->init_socket();
 		
 		# Loop
-		while (true) {
-			# Get Input
-			$input														= $this->service->get_input();
+		try {
+			while (true) {
+				# Get Input
+				$input													= $this->service->get_input();
 			
-			# Get Response
-			$response													= $this->controller->get_output($input);
+				# Get Response
+				$response												= $this->controller->get_output($input);
 			
-			# Return Response
-			$this->service->write($response);
+				# Return Response
+				$this->service->write($response);
+			}
+		}
+		catch (Exception $e) {
+			logg("Platform: Caught Exception: " . $e->getMessage());
 		}
 		
 		# Close Socket
