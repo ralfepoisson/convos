@@ -60,47 +60,53 @@ class Manifest {
 		
 		# Extract Hooks
 		$i																= 0;
-		foreach ($xml->app->hooks->call as $hook) {
-			$this->hooks[$i]											= new Call();
-			$this->hooks[$i]->input										= $this->clean_attr($hook->input);
-			$this->hooks[$i]->command									= $this->clean_attr($hook->command);
-			logg("  > Added Hook '{$this->hooks[$i]->input}'.");
-			if (isset($hook->alts)) {
-				foreach ($hook->alts->alt as $alt) {
-					$this->hooks[$i]->alts[]							= $this->clean_attr($alt);
+		if (sizeof($xml->app->hooks->call)) {
+			foreach ($xml->app->hooks->call as $hook) {
+				$this->hooks[$i]										= new Call();
+				$this->hooks[$i]->input									= $this->clean_attr($hook->input);
+				$this->hooks[$i]->command								= $this->clean_attr($hook->command);
+				logg("  > Added Hook '{$this->hooks[$i]->input}'.");
+				if (isset($hook->alts)) {
+					foreach ($hook->alts->alt as $alt) {
+						$this->hooks[$i]->alts[]						= $this->clean_attr($alt);
+					}
 				}
+				$i++;
 			}
-			$i++;
 		}
 		
 		# Extract Assides
 		$i																= 0;
-		foreach ($xml->app->assides->call as $asside) {
-			$this->assides[$i]											= new Call();
-			$this->assides[$i]->input									= $this->clean_attr($asside->input);
-			$this->assides[$i]->command									= $this->clean_attr($asside->command);
-			logg("  > Added Asside '{$this->assides[$i]->input}'.");
-			if (isset($asside->alts)) {
-				foreach ($asside->alts->alt as $alt) {
-					$this->assides[$i]->alts[]							= $this->clean_attr($alt);
+		if (sizeof($xml->app->assides->call)) {
+			foreach ($xml->app->assides->call as $asside) {
+				$this->assides[$i]										= new Call();
+				$this->assides[$i]->input								= $this->clean_attr($asside->input);
+				$this->assides[$i]->command								= $this->clean_attr($asside->command);
+				logg("  > Added Asside '{$this->assides[$i]->input}'.");
+				if (isset($asside->alts)) {
+					foreach ($asside->alts->alt as $alt) {
+						$this->assides[$i]->alts[]						= $this->clean_attr($alt);
+					}
 				}
+				$i++;
 			}
-			$i++;
 		}
 		
 		# Extract Conversation Starters
 		$i																= 0;
-		foreach ($xml->app->starters->call as $starter) {
-			$this->starters[$i]											= new Call();
-			$this->starters[$i]->input									= $this->clean_attr($starter->input);
-			$this->starters[$i]->command								= $this->clean_attr($starter->command);
-			logg("  > Added Conversation Starter '{$this->starters[$i]->input}'.");
-			if (isset($starter->alts)) {
-				foreach ($starter->alts->alt as $alt) {
-					$this->starters[$i]->alts[]							= $this->clean_attr($alt);
+		if (sizeof($xml->app->starters->call)) {
+			foreach ($xml->app->starters->call as $starter) {
+				$this->starters[$i]										= new Call();
+				$this->starters[$i]->input								= $this->clean_attr($starter->input);
+				$this->starters[$i]->command							= $this->clean_attr($starter->command);
+				logg("  > Added Conversation Starter '{$this->starters[$i]->input}'.");
+				if (isset($starter->alts)) {
+					foreach ($starter->alts->alt as $alt) {
+						$this->starters[$i]->alts[]						= $this->clean_attr($alt);
+					}
 				}
+				$i++;
 			}
-			$i++;
 		}
 	}
 	
@@ -109,3 +115,4 @@ class Manifest {
 	}
 	
 }
+
