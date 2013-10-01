@@ -1,0 +1,87 @@
+#!/usr/bin/php
+<?php
+/**
+ * ConvOS Client
+ * 
+ * This script connects to the ConvOS Server and 
+ * initiates a conversation.
+ * 
+ * @author Ralfe Poisson <ralfepoisson@gmail.com>
+ * @version 0.0.1
+ * @license GPL3
+ */
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+$host																	= "127.0.0.1";
+$port																	= "3333";
+
+# =============================================================================
+# MAIN PROGRAM
+# =============================================================================
+
+# Apply required settings
+set_time_limit(0);
+ob_implicit_flush();
+
+# Connect to Server
+$socket 																= socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("socket_create() failed: reason: " . socket_strerror(socket_last_error()) . "\n");
+$result 																= socket_connect($socket, $host, $port) or die("socket_connect() failed.\nReason: ($result) " . socket_strerror(socket_last_error($socket)) . "\n");
+
+# Converse
+while (true) {
+	# Get Input from User
+	$input																= "";
+	while (!strlen($input)) {
+		print "me> ";
+		$input															= readline();
+	}
+	$xml																= "<?xml version=\"1.0\" ?><document><message>{$input}</message></document>\n";
+	
+	# Send message to the server
+	socket_write($socket, $xml, strlen($xml));
+	
+	# Get Response from Server
+	try {
+		$output															= "";
+		$end															= false;
+		while (!$end) {
+			$response 													= socket_read($socket, 2048);
+			$output														.= $response;
+			$end														= (strstr($response, "</DOCUMENT>"))? true : false;
+		}
+		$xml															= simplexml_load_string($output);
+		print "server> " . (string)$xml->message . "\n";
+	}
+	catch (Exception $e) {
+		// Do something
+		print "debug> ERROR.\n";
+		socket_close($socket);
+		die();
+	}
+	
+	# Handle control command
+	$command															= strtoupper($input);
+	if ($command == "GOODBYE") {
+		print "server> Goodbye.\n\n";
+		socket_close($socket);
+		die();
+	}
+}
+
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
+
+function readline() {
+	$stdin 																= fopen("php://stdin", "r");
+	$input 																= fgets($stdin);
+	fclose($stdin);
+	return trim($input);
+}
+
+# =============================================================================
+# THE END
+# =============================================================================

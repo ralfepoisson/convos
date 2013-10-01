@@ -98,6 +98,9 @@ class Service {
 			$this->error("socket_read() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
 			break 2;
 		}
+		else {
+			$this->connected											= 1;
+		}
 		
 		# Log Activity
 		logg(" - Read data.");
@@ -115,21 +118,25 @@ class Service {
 	}
 	
 	public function write($output) {
+		# Log Activity
+		logg("Service: Writing to Socket.");
+
 		if ($this->connected) {
 			# Format Output
 			$output														= trim($output);
 		
 			# Ensure there is something to output
 			if (strlen($output)) {
-				# Log Activity
-				logg("Service: Writing to Socket.");
-		
 				# Write to Socket
 				if (!socket_write($this->resource, $output, strlen($output))) {
 					$this->error("socket_write() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
 				}
 			}
 		}
+		else {
+			logg(" - could not write to socket as connection has been closed.");
+		}
+		
 		# Return True
 		return true;
 	}

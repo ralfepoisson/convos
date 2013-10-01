@@ -29,15 +29,10 @@ class Controller {
 		}
 		
 		# Encode Output
-		$output															= $this->encode($output);
-		
-		//TODO: Record Message
-		
-		# Log Activity
-		logg("Controller: Returning Output [{$output->message->content}]");
+		$output															= $this->encode($output)->generate() . "\n";
 		
 		# Return Output
-		return $output->generate();
+		return $output;
 	}
 	
 	private function route_internals() {
@@ -51,12 +46,34 @@ class Controller {
 		return false;
 	}
 	
+	/**
+	 * route_apps()
+	 * This is the main intelligence behind deciding how to respond to a given input. The
+	 * function first checks to see if the user is asking for a quick piece of information
+	 * without leaving the current application context. This is known as an 'Asside'. If
+	 * this is not the case, the function then routes the input to the current conversation
+	 * happening within the current app context. If no conversation is currently occurring,
+	 * then the function checks to see if the input matches a conversation starter, which will
+	 * change the application context and set a current conversation or it will check to see
+	 * if the input matches a hook, which will just change the application context.
+	 */
 	private function route_apps() {
 		# Get Message Component
 		$message														= trim((string)$this->input->message);
 		
 		# Get Platform
 		$platform														= Platform::Factory();
+		
+		# First Check Assides
+		foreach ($platform->apps as $app) {
+			foreach ($app->manifest->assides as $call) {
+				$result													= $this->test_call($call, $message);
+				if (!($result === false)) {
+					logg("Controller: Routing to App '{$app->manifest->name}' through Asside: '{$call->input}'");
+					return $result;
+				}
+			}
+		}
 		
 		# If currently in a conversation, pass input to the conversation
 		if (!($platform->conversation == 0)) {
@@ -83,18 +100,7 @@ class Controller {
 					}
 				}
 			}
-		
-			# Loop through Assides
-			foreach ($platform->apps as $app) {
-				foreach ($app->manifest->assides as $call) {
-					$result												= $this->test_call($call, $message);
-					if (!($result === false)) {
-						logg("Controller: Routing to App '{$app->manifest->name}' through Asside: '{$call->input}'");
-						return $result;
-					}
-				}
-			}
-		
+			
 			# Loop through Conversation Starters
 			foreach ($platform->apps as $app) {
 				foreach ($app->manifest->starters as $call) {
@@ -217,10 +223,22 @@ class Controller {
 		$message														= new XMLelement("message", $output);
 		$xml->document->add($message);
 		
+		# Log Activity
+		logg("Controller: Responding to client. [{$output}]");
+		
 		# Return XML
 		return $xml;
 	}
 	
+	/**
+	 * process_directive()
+	 * This function takes in a directive, and then executes the directive's objective.
+	 * A directive is a control structure passed to the ConvOS platform from an
+	 * application call. It is formatted as [DIRECTIVE]. For example, [END:CONVERSATION]
+	 * Directives are used to induce a state change within the Platform, and are not
+	 * part of the message sent to the client for display.
+	 * @param $directive String: This is the directive to execute.
+	 */
 	private function process_directive($directive) {
 		if ($directive == "END:CONVERSATION") {
 			# Get Platform
