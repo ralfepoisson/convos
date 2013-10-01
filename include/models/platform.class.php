@@ -16,18 +16,20 @@ class Platform {
 	*/
 	
 	public $apps;
-	public $context;
 	public $service;
 	public $controller;
+	public $context;
+	public $conversation;
 	
 	public function __construct() {
 		# Set Attributes
 		$this->apps														= array();
-		$this->context													= 0;
 		$this->controller												= new Controller();
 		$this->service													= new Service(	Platform::get_config("server_address"), 
 																						Platform::get_config("server_port")
 																					);
+		$this->context													= 0;
+		$this->conversation												= 0;
 	}
 	
 	/*	-------------------------------------------------------

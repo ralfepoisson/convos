@@ -15,6 +15,7 @@ class Service {
 	public $port;
 	public $socket;
 	public $resource;
+	public $connected;
 	
 	public function __construct($address="127.0.0.1", $port="3333") {
 		# Initialize Attributes
@@ -22,6 +23,7 @@ class Service {
 		$this->port														= $port;
 		$this->socket													= 0;
 		$this->resource													= 0;
+		$this->connected												= 0;
 		
 		# Set Congiruation Properties
 		set_time_limit(0);
@@ -49,6 +51,9 @@ class Service {
 		if (!socket_listen($this->socket, 5)) {
 		    $this->error("socket_listen() failed: reason: " . socket_strerror(socket_last_error($this->socket)));
 		}
+		
+		# Set as Connected
+		$this->connected												= 1;
 		
 		# Return True
 		return true;
@@ -83,6 +88,9 @@ class Service {
 		
 		# Close Socket
 		socket_close($this->resource);
+		
+		# Mark as disconnected
+		$this->connected												= 0;
 	}
 	
 	public function read() {
@@ -107,20 +115,21 @@ class Service {
 	}
 	
 	public function write($output) {
-		# Format Output
-		$output															= trim($output);
+		if ($this->connected) {
+			# Format Output
+			$output														= trim($output);
 		
-		# Ensure there is something to output
-		if (strlen($output)) {
-			# Log Activity
-			logg("Service: Writing to Socket.");
+			# Ensure there is something to output
+			if (strlen($output)) {
+				# Log Activity
+				logg("Service: Writing to Socket.");
 		
-			# Write to Socket
-			if (!socket_write($this->resource, $output, strlen($output))) {
-				$this->error("socket_write() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
+				# Write to Socket
+				if (!socket_write($this->resource, $output, strlen($output))) {
+					$this->error("socket_write() failed: reason: " . socket_strerror(socket_last_error($this->resource)));
+				}
 			}
 		}
-		
 		# Return True
 		return true;
 	}
@@ -134,4 +143,3 @@ class Service {
 	}
 	
 }
-
