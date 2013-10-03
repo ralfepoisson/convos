@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+	<app>
+		<meta>
+			<name>Wolfram Alpha</name>
+			<description>
+				This application provides access to the processing power of Wolfram Alpha.
+			</description>
+			<author>
+				<name>Ralfe Poisson</name>
+				<email>ralfepoisson@gmail.com</email>
+			</author>
+			<version>0.0.1</version>
+		</meta>
+		<hooks>
+			
+		</hooks>
+		<assides>
+			
+		</assides>
+		<conversation_starters>
+			<call>
+				<input>Access science database</input>
+				<command>php {{APPDIR}}/Wolfram/app.php {{INPUT}}</command>
+				<alts>
+					<alt>Access Wolfram Alpha</alt>
+					<alt>Access the Wolfram database</alt>
+				</alts>
+			</call>
+		</conversation_starters>
+	</app>
+</document>
