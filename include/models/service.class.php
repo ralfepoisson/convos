@@ -51,26 +51,38 @@ class Service {
 		if (!socket_listen($this->socket, 5)) {
 		    $this->error("socket_listen() failed: reason: " . socket_strerror(socket_last_error($this->socket)));
 		}
-		
-		# Set as Connected
-		$this->connected												= 1;
-		
+		/*
+		# Setup Events
+		$base = event_base_new();
+		$event = event_new();
+		event_set($event, $socket, EV_READ | EV_PERSIST, "Service::new_client()", $base);
+		event_base_set($event, $base);
+		event_add($event);
+		event_base_loop($base);
+		*/
 		# Return True
 		return true;
 	}
 	
-	public function get_input() {
+	public function listen() {
 		while (true) {
 			if ($this->resource == 0) {
 				if (!($this->resource									= socket_accept($this->socket))) {
 					$this->error("socket_accept() failed: reason: " . socket_strerror(socket_last_error($this->socket)));
 					break;
 				}
+				else {
+					return true;
+				}
 				
 				# Log Activity
 				logg("Service: Received incoming connection.");
 			}
-			
+		}
+	}
+	
+	public function get_input() {
+		while (true) {
 			# Read Input
 			$input														= $this->read();
 			

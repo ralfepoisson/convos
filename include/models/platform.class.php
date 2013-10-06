@@ -20,6 +20,7 @@ class Platform {
 	public $controller;
 	public $context;
 	public $conversation;
+	public $parent_pid;
 	
 	public function __construct() {
 		# Set Attributes
@@ -30,6 +31,9 @@ class Platform {
 																					);
 		$this->context													= 0;
 		$this->conversation												= 0;
+		
+		# Get PID
+		$this->parent_pid												= getmypid();
 	}
 	
 	/*	-------------------------------------------------------
@@ -74,14 +78,40 @@ class Platform {
 		# Loop
 		try {
 			while (true) {
-				# Get Input
-				$input													= $this->service->get_input();
-			
-				# Get Response
-				$response												= $this->controller->get_output($input);
-			
-				# Return Response
-				$this->service->write($response);
+				# Wait for Connection
+				$this->service->listen();
+				
+				# Fork Process
+				$pid													= pcntl_fork();
+				if ($pid == -1) {
+					throw new Exception("Could not Fork");
+				}
+				else if ($pid == $this->parent_id) {
+					// Do nothing, as this is the parent process
+				}
+				else {
+					# Log Activity
+					logg("Platform: Child Process: Spawned new child process. PID '{$pid}'.");
+					
+					# Child Process
+					while (true) {
+						# Get Input
+						$input													= $this->service->get_input();
+
+						# Get Response
+						$response												= $this->controller->get_output($input);
+						if (!$response) {
+							break;
+						}
+						
+						# Return Response
+						$this->service->write($response);
+					}
+					
+					# Kill Child Process
+					logg("Platform: Child Process: Killing child process.");
+					die();
+				}
 			}
 		}
 		catch (Exception $e) {
