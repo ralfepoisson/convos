@@ -21,6 +21,7 @@ class Platform {
 	public $context;
 	public $conversation;
 	public $parent_pid;
+	public $log;
 	
 	public function __construct() {
 		# Set Attributes
@@ -31,6 +32,7 @@ class Platform {
 																					);
 		$this->context													= 0;
 		$this->conversation												= 0;
+		$this->log														= 0;
 		
 		# Get PID
 		$this->parent_pid												= getmypid();
@@ -93,19 +95,24 @@ class Platform {
 					# Log Activity
 					logg("Platform: Child Process: Spawned new child process. PID '{$pid}'.");
 					
+					# Create Conversation Log
+					$this->log													= new Conversation();
+					
 					# Child Process
 					while (true) {
 						# Get Input
 						$input													= $this->service->get_input();
-
+						$this->log->add_message($input);
+						
 						# Get Response
 						$response												= $this->controller->get_output($input);
-						if (!$response) {
+						if (!$response->message) {
 							break;
 						}
+						$this->log->add_message($response);
 						
 						# Return Response
-						$this->service->write($response);
+						$this->service->write($response->toXML);
 					}
 					
 					# Kill Child Process

@@ -18,7 +18,7 @@ class Controller {
 	
 	public function get_output($input) {
 		# Interpret Input
-		$this->input													= $this->decode($input);
+		$this->input													= $input;
 		
 		# First Try Internal Commands
 		$output															= $this->route_internals();
@@ -29,10 +29,10 @@ class Controller {
 		}
 		
 		# Encode Output
-		$output															= $this->encode($output)->generate() . "\n";
+		$message														= AbstractMessage::Factory($output, "Out");
 		
 		# Return Output
-		return $output;
+		return $message;
 	}
 	
 	private function route_internals() {
@@ -177,57 +177,6 @@ class Controller {
 		
 		# Return Command
 		return $command;
-	}
-	
-	/**
-	 * decode()
-	 * This function takes the string read in from the client and
-	 * converts it into an XML object for processing.
-	 * @param $input String: The input from the client containing the XML
-	 * @return XML
-	 */
-	private function decode($input) {
-		return simplexml_load_string($input);
-	}
-	
-	/**
-	 * encode()
-	 * This function takes the string returned from the application and
-	 * converts it into an XML object to send to the client.
-	 * @param $output String: The output from the app
-	 * @return XML
-	 */
-	private function encode($output) {
-		# Create XML Object
-		$xml															= new XML();
-		
-		# Extract Control Structures
-		$controls														= new XMLelement("controls");
-		while (strstr($output, "[")) {
-			# Get Directive
-			$pos														= strpos($output, "[");
-			$pos2														= strpos($output, "]");
-			$directive													= substr($output, $pos + 1, ($pos2 - $pos - 2));
-			$output														= substr($output, 0, $pos - 1) . substr($output, $pos2 + 1);
-			
-			# Process Directive
-			$this->process_directive($directive);
-			
-			# Add to control structures
-			$directive_element											= new XMLelement("directive", $directive);
-			$controls->add($directive_element);
-		}
-		$xml->document->add($controls);
-		
-		# Add The remaining output to the message component
-		$message														= new XMLelement("message", $output);
-		$xml->document->add($message);
-		
-		# Log Activity
-		logg("Controller: Responding to client. [{$output}]");
-		
-		# Return XML
-		return $xml;
 	}
 	
 	/**

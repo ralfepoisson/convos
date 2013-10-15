@@ -89,7 +89,12 @@ class Service {
 			# Return Input
 			if ($input) {
 				logg("Service: Received Input: [{$input}]");
-				return $input;
+				
+				# Create Message object from input
+				$message												= AbstractMessage::Factory($input, "In");
+				
+				# Return Message
+				return $message;
 			}
 		}
 	}
